@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blood Donor | Admin</title>
+    <link rel="stylesheet" href="./assets/style.css">
+  </head>
+  <body data-page="admin">
+    <header class="site-header">
+      <div class="container nav">
+        <div class="brand"><span class="logo"></span> Blood Donor</div>
+        <nav class="nav-links">
+          <a data-nav href="./index.html">Home</a>
+          <a data-nav href="./organize.html">Organize Camp</a>
+          <button id="openProfile" class="linklike" type="button">Profile</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h1>Admin Dashboard</h1>
+        <h2>Pending Camp Requests</h2>
+        <p id="emptyPending" class="muted">No pending requests.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Date</th>
+                <th>City</th>
+                <th>Requested By</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="pendingBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top: 16px;">
+        <h2>History</h2>
+        <p id="emptyHistory" class="muted">No history entries.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Date</th>
+                <th>City</th>
+                <th>Status</th>
+                <th>Decided By</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div id="profileBackdrop" class="modal-backdrop" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+        <header>
+          <strong id="profileTitle">Profile</strong>
+          <button id="closeProfile" class="icon-btn" aria-label="Close">✕</button>
+        </header>
+        <div class="content">
+          <div id="profLoggedIn" style="display:none">
+            <p><strong>Username:</strong> <span id="profUName"></span></p>
+            <p><strong>Email:</strong> <span id="profUMail"></span></p>
+            <div class="actions">
+              <button id="profLogout">Logout</button>
+            </div>
+          </div>
+          <div id="profLoggedOut">
+            <p class="muted">You are not logged in.</p>
+            <div class="actions">
+              <button id="profGoLogin" class="btn">Login</button>
+              <button id="profGoSignup" class="btn secondary">Sign up</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./assets/app.js"></script>
+  </body>
+</html>

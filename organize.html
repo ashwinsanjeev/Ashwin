@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blood Donor | Organize Camp</title>
+    <link rel="stylesheet" href="./assets/style.css">
+  </head>
+  <body data-page="organize">
+    <header class="site-header">
+      <div class="container nav">
+        <div class="brand"><span class="logo"></span> Blood Donor</div>
+        <nav class="nav-links">
+          <a data-nav href="./index.html">Home</a>
+          <a data-nav href="./register.html">Register</a>
+          <a data-nav href="./search.html">Search</a>
+          <a data-nav href="./request.html">Request</a>
+          <a data-nav href="./organize.html">Organize Camp</a>
+          <a data-nav href="./admin.html">Admin</a>
+          <button id="openProfile" class="linklike" type="button">Profile</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h1>Organize a Blood Donation Camp</h1>
+        <div id="organizeToast" class="notice" style="display:none"></div>
+        <form id="organizeForm">
+          <div class="grid cols-2">
+            <div class="field">
+              <label for="orgEvent">Event name</label>
+              <input type="text" id="orgEvent" required>
+            </div>
+            <div class="field">
+              <label for="orgDate">Date</label>
+              <input type="date" id="orgDate" required>
+            </div>
+            <div class="field" style="grid-column: 1 / -1;">
+              <label for="orgCity">City</label>
+              <input type="text" id="orgCity" required>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="submit">Submit for Admin Approval</button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <div id="profileBackdrop" class="modal-backdrop" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+        <header>
+          <strong id="profileTitle">Profile</strong>
+          <button id="closeProfile" class="icon-btn" aria-label="Close">✕</button>
+        </header>
+        <div class="content">
+          <div id="profLoggedIn" style="display:none">
+            <p><strong>Username:</strong> <span id="profUName"></span></p>
+            <p><strong>Email:</strong> <span id="profUMail"></span></p>
+            <div class="actions">
+              <button id="profLogout">Logout</button>
+            </div>
+          </div>
+          <div id="profLoggedOut">
+            <p class="muted">You are not logged in.</p>
+            <div class="actions">
+              <button id="profGoLogin" class="btn">Login</button>
+              <button id="profGoSignup" class="btn secondary">Sign up</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./assets/app.js"></script>
+  </body>
+</html>
