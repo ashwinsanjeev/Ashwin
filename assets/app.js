@@ -4,7 +4,8 @@
     donors: 'bd_donors',
     users: 'bd_users',
     session: 'bd_session',
-    camps: 'bd_camp_requests'
+    camps: 'bd_camp_requests',
+    admins: 'bd_admin_emails'
   };
 
   function readJSON(key, fallback) {
@@ -29,6 +30,17 @@
 
   function ensureArray(value) {
     return Array.isArray(value) ? value : [];
+  }
+
+  // Admin emails
+  function getAdminEmails() {
+    const defaults = ['admin@example.com'];
+    return ensureArray(readJSON(STORAGE_KEYS.admins, defaults)).map(normalize);
+  }
+  function isCurrentUserAdmin() {
+    const user = getCurrentUser();
+    if (!user) return false;
+    return getAdminEmails().includes(normalize(user.email));
   }
 
   // Donors
@@ -76,7 +88,7 @@
   }
   function logoutUser() { localStorage.removeItem(STORAGE_KEYS.session); }
 
-  // Camp Requests (Organize)
+  // Camp Requests
   function getCampRequests() { return ensureArray(readJSON(STORAGE_KEYS.camps, [])); }
   function saveCampRequests(list) { writeJSON(STORAGE_KEYS.camps, list); }
   function submitCampRequest({ eventName, date, city, requestedBy }) {
@@ -84,11 +96,7 @@
     const item = {
       id: (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()),
       eventName, date, city, requestedBy: requestedBy || null,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      decidedAt: null,
-      decidedBy: null,
-      note: ''
+      status: 'pending', createdAt: new Date().toISOString(), decidedAt: null, decidedBy: null, note: ''
     };
     list.push(item); saveCampRequests(list); return item;
   }
@@ -96,12 +104,8 @@
     const list = getCampRequests();
     const ix = list.findIndex(x => x.id === id);
     if (ix < 0) return null;
-    list[ix].status = status;
-    list[ix].decidedAt = new Date().toISOString();
-    list[ix].decidedBy = decidedBy || null;
-    list[ix].note = note || '';
-    saveCampRequests(list);
-    return list[ix];
+    list[ix].status = status; list[ix].decidedAt = new Date().toISOString(); list[ix].decidedBy = decidedBy || null; list[ix].note = note || '';
+    saveCampRequests(list); return list[ix];
   }
 
   // Mail helpers
@@ -180,7 +184,7 @@
     backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.classList.remove('open'); });
 
     const logoutBtn = document.getElementById('profLogout');
-    if (logoutBtn) logoutBtn.addEventListener('click', () => { logoutUser(); render(); });
+    if (logoutBtn) logoutBtn.addEventListener('click', () => { logoutUser(); render(); updateAdminLinkVisibility(); });
 
     const goLogin = document.getElementById('profGoLogin');
     const goSignup = document.getElementById('profGoSignup');
@@ -188,9 +192,15 @@
     if (goSignup) goSignup.addEventListener('click', () => { location.href = './signup.html'; });
   }
 
-  // Page initializers
-  function initHome() {}
+  // Admin nav visibility
+  function updateAdminLinkVisibility() {
+    const isAdmin = isCurrentUserAdmin();
+    document.querySelectorAll('[data-admin-link]')
+      .forEach(el => { el.style.display = isAdmin ? '' : 'none'; });
+  }
 
+  // Page initializers (unchanged except admin guard)
+  function initHome() {}
   function initRegister() {
     const form = document.getElementById('registerForm'); if (!form) return;
     populateBloodGroups(document.getElementById('regGroup'), true);
@@ -206,7 +216,6 @@
       addDonor({ name, bloodGroup, email, contact, city }); form.reset(); showToast(toast, 'Registered as donor successfully');
     });
   }
-
   function initSearch() {
     const form = document.getElementById('searchForm'); if (!form) return;
     populateBloodGroups(document.getElementById('searchGroup'), true);
@@ -233,7 +242,6 @@
       location.href = link;
     });
   }
-
   function initRequest() {
     const form = document.getElementById('requestForm'); if (!form) return;
     populateBloodGroups(document.getElementById('reqGroup'), true);
@@ -254,7 +262,6 @@
       location.href = link;
     });
   }
-
   function initOrganize() {
     const form = document.getElementById('organizeForm'); if (!form) return;
     const toast = document.getElementById('organizeToast');
@@ -270,8 +277,9 @@
       showToast(toast, 'Camp request submitted for admin approval');
     });
   }
-
   function initAdmin() {
+    // Guard: redirect if not admin
+    if (!isCurrentUserAdmin()) { location.href = './index.html'; return; }
     const pendingTbody = document.getElementById('pendingBody'); if (!pendingTbody) return;
     const historyTbody = document.getElementById('historyBody');
     const emptyPending = document.getElementById('emptyPending');
@@ -330,7 +338,6 @@
 
     render();
   }
-
   function initAuthPages() {
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
@@ -341,7 +348,7 @@
         e.preventDefault();
         const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
-        try { loginUser(email, password); location.href = './index.html'; }
+        try { loginUser(email, password); updateAdminLinkVisibility(); location.href = './index.html'; }
         catch (err) { showToast(toast, err.message || 'Login failed', 'error'); }
       });
     }
@@ -353,7 +360,7 @@
         const email = document.getElementById('signupEmail').value.trim();
         const password = document.getElementById('signupPassword').value;
         if (!username || !email || !password) return showToast(toast, 'Fill all fields', 'error');
-        try { signupUser(username, email, password); location.href = './index.html'; }
+        try { signupUser(username, email, password); updateAdminLinkVisibility(); location.href = './index.html'; }
         catch (err) { showToast(toast, err.message || 'Signup failed', 'error'); }
       });
     }
@@ -362,6 +369,7 @@
   function initByPage() {
     setAriaCurrentNav();
     setupProfileModal();
+    updateAdminLinkVisibility();
     const page = document.body.dataset.page || 'home';
     switch (page) {
       case 'home': return initHome();
@@ -376,10 +384,10 @@
 
   document.addEventListener('DOMContentLoaded', initByPage);
 
-  // Expose for debugging in console
   window.BloodDonor = {
     getDonors, addDonor, findDonorsByGroupAndCity,
     getUsers, signupUser, loginUser, getCurrentUser, logoutUser,
-    getCampRequests, submitCampRequest, setCampRequestStatus
+    getCampRequests, submitCampRequest, setCampRequestStatus,
+    getAdminEmails, isCurrentUserAdmin
   };
 })();
