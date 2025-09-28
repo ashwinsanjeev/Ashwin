@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blood Donor | Profile</title>
+    <link rel="stylesheet" href="./assets/style.css">
+  </head>
+  <body data-page="home">
+    <header class="site-header">
+      <div class="container nav">
+        <div class="brand"><span class="logo"></span> Blood Donor</div>
+        <nav class="nav-links">
+          <a data-nav href="./index.html">Home</a>
+          <a data-nav href="./register.html">Register</a>
+          <a data-nav href="./search.html">Search</a>
+          <a data-nav href="./request.html">Request</a>
+          <a data-nav href="./organize.html">Organize Camp</a>
+          <a data-nav href="./admin.html">Admin</a>
+          <button id="openProfile" class="linklike" type="button">Profile</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h1>Profile</h1>
+        <p class="muted">Profile is now a popup. Click the Profile button in the top navigation to open it.</p>
+        <div class="actions"><button id="openProfile" class="btn" type="button">Open Profile</button></div>
+      </section>
+    </main>
+
+    <div id="profileBackdrop" class="modal-backdrop" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+        <header>
+          <strong id="profileTitle">Profile</strong>
+          <button id="closeProfile" class="icon-btn" aria-label="Close">✕</button>
+        </header>
+        <div class="content">
+          <div id="profLoggedIn" style="display:none">
+            <p><strong>Username:</strong> <span id="profUName"></span></p>
+            <p><strong>Email:</strong> <span id="profUMail"></span></p>
+            <div class="actions">
+              <button id="profLogout">Logout</button>
+            </div>
+          </div>
+          <div id="profLoggedOut">
+            <p class="muted">You are not logged in.</p>
+            <div class="actions">
+              <button id="profGoLogin" class="btn">Login</button>
+              <button id="profGoSignup" class="btn secondary">Sign up</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./assets/app.js"></script>
+  </body>
+</html>
